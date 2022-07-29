@@ -26,10 +26,6 @@ resarr = ['fes', 'söy', 'ya', 'woj', 'qäz', 'won', 'ßak', 'fam', 'mop', 'log'
           'goj', 'kaf', 'oso', 'tox', 'com', 'bald', 'zet', 'kap', 'foh', 'rel', 'boj', 'jig', 'sig', 'law', 'jis',
           'yas', 'vom', 'gom', 'miq', 'uaq', 'pov', 'vik', 'kov', 'yay', 'rok']
 
-exclang = [' ', '.', '?', '!', '~', '"', ',']
-
-ascii_exclang = [ord(i) for i in exclang]
-
 
 def extrarule(content: str):
     """
@@ -57,19 +53,16 @@ def topazencoder(content: str):
     content = list(content)
     returnlang = ""
     for i in content:
-        if i in exclang:
-            returnlang += i
-        else:
-            print(ord(i))
-            r = list(convert_iter(int(ord(i)), len(langset)))
-            f = int(r[0] + r[1])
-            b = int(r[2] + r[3])
-            d = int(r[4] + r[5])
-            e = int(r[6] + r[7])
-            k = int(r[8] + r[9])
-            print(f, b, d, e, k)
+        # print(ord(i))
+        r = list(convert_iter(int(ord(i)), len(langset)))
+        f = int(r[0] + r[1])
+        b = int(r[2] + r[3])
+        d = int(r[4] + r[5])
+        e = int(r[6] + r[7])
+        k = int(r[8] + r[9])
+        # print(f, b, d, e, k)
 
-            returnlang += langset[f] + langset[b] + langset[d] + langset[e] + langset[k]
+        returnlang += langset[f] + langset[b] + langset[d] + langset[e] + langset[k]
     return extrarule(returnlang)
 
 
@@ -78,13 +71,11 @@ def topazdecoder(content: str):
     returnlang = ""
     larray = []
     for i in content:
-        if i in exclang:
-            returnlang += i
-        else:
-            larray.append(i)
-    print(larray)
+        larray.append(i)
+    #print(larray)
     larray_chunked = list_chunk(larray, 5)
-    print(larray_chunked)
+    #print(larray_chunked)
+
     for i in larray_chunked:
         a = langset.index(i[0])
         b = langset.index(i[1])
@@ -94,13 +85,22 @@ def topazdecoder(content: str):
         returnlang += chr(
             a * len(langset) ** 4 + b * len(langset) ** 3 + c * len(langset) ** 2 + d * len(langset) + e * 1)
 
+
     return returnlang
 
 
 def ask():
-    print("input")
+    print("1: to topaz / 2: to original")
     a = input()
-    print(topazencoder(a))
+    if a == '1':
+        print("input")
+        b = input()
+        print(topazencoder(b))
+    else:
+        print("input")
+        b = input()
+        print(topazdecoder(b))
+
     # print(translate(topazencoder(a)))
     ask()
 
@@ -111,5 +111,4 @@ def translate(content):
     return content
 
 
-print(topazencoder("안녕"))
-print(topazdecoder("aavbжaasѡx"))
+ask()
