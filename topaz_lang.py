@@ -1,11 +1,9 @@
-import hashlib
-import re
+import json
+from collections import namedtuple
+
 
 langset = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-           'w', 'x', 'y', 'z', 'ä', 'ö', 'ü', 'ß', 'ю', 'ф', 'д', 'б', 'ж', 'и', 'ꙗ', 'ѱ', 'ъ', 'ы', 'щ', 'г', 'ч', 'ц',
-           'ѡ', 'к', 'л', 'н', 'є']
-print(len(langset), 1114112 / len(langset))
-print(len(langset), len(set(langset)))
+           'w', 'x', 'y', 'z', 'ä', 'ö', 'ü', 'ß']
 
 targetarr = ['fs', 'sy', 'yd', 'wj', 'qz', 'wn', 'ßk', 'fm', 'mp', 'lg', 'hk', 'jh', 'jz', 'zr', 'tg', 'äf', 'fd',
              'bc', 'cw', 'wb', 'bz', 'zk', 'kt', 'tc', 'pg', 'vl', 'mk', 'tk', 'kj', 'mj', 'jk', 'np', 'yn', 'pj',
@@ -26,43 +24,28 @@ resarr = ['fes', 'söy', 'ya', 'woj', 'qäz', 'won', 'ßak', 'fam', 'mop', 'log'
           'goj', 'kaf', 'oso', 'tox', 'com', 'bald', 'zet', 'kap', 'foh', 'rel', 'boj', 'jig', 'sig', 'law', 'jis',
           'yas', 'vom', 'gom', 'miq', 'uaq', 'pov', 'vik', 'kov', 'yay', 'rok']
 
-
+exclang = [' ', '.', '?', '!', '~', '"', ',']
 def extrarule(content: str):
-    """
     for i in range(len(targetarr)):
         content = content.replace(targetarr[i], resarr[i])
-    """
     return content
 
 
-def convert_iter(num, base):
-    tmp = ''
-    while num:
-        tmp = '{:02d}'.format(num % base) + tmp
-        num //= base
-
-    return '{:010d}'.format(int(tmp))
-
-
-def list_chunk(lst, n):
-    return [lst[i:i + n] for i in range(0, len(lst), n)]
+with open("topaz_lang.json", "r", encoding="utf8") as f:
+    contents = f.read() # string 타입
+    json_data = json.loads(contents)
 
 
 def topazencoder(content: str):
     content = content.rstrip().lstrip().lower()
     content = list(content)
-    returnlang = ""
+    returnlang = ''
     for i in content:
-        # print(ord(i))
-        r = list(convert_iter(int(ord(i)), len(langset)))
-        f = int(r[0] + r[1])
-        b = int(r[2] + r[3])
-        d = int(r[4] + r[5])
-        e = int(r[6] + r[7])
-        k = int(r[8] + r[9])
-        # print(f, b, d, e, k)
-
-        returnlang += langset[f] + langset[b] + langset[d] + langset[e] + langset[k]
+        if i in exclang:
+            returnlang+=i
+        else:
+            returnlang += json_data[i]
+    print(content, returnlang)
     return extrarule(returnlang)
 
 
@@ -72,9 +55,9 @@ def topazdecoder(content: str):
     larray = []
     for i in content:
         larray.append(i)
-    #print(larray)
+    # print(larray)
     larray_chunked = list_chunk(larray, 5)
-    #print(larray_chunked)
+    # print(larray_chunked)
 
     for i in larray_chunked:
         a = langset.index(i[0])
@@ -85,23 +68,25 @@ def topazdecoder(content: str):
         returnlang += chr(
             a * len(langset) ** 4 + b * len(langset) ** 3 + c * len(langset) ** 2 + d * len(langset) + e * 1)
 
-
     return returnlang
 
 
 def ask():
-    print("1: to topaz / 2: to original")
-    a = input()
-    if a == '1':
-        print("input")
-        b = input()
-        print(topazencoder(b))
-    else:
-        print("input")
-        b = input()
-        print(topazdecoder(b))
+    try:
+        print("1: to topaz / 2: to original")
+        a = input()
+        if a == '1':
+            print("input")
+            b = input()
+            print(topazencoder(b))
+        else:
+            print("input")
+            b = input()
+            print(topazdecoder(b))
 
-    # print(translate(topazencoder(a)))
+        # print(translate(topazencoder(a)))
+    except Exception as e:
+        print(e)
     ask()
 
 
